@@ -1,6 +1,6 @@
 const express = require('express')
 const app = express()
-const port = 3000 || proces.env.PORT;
+const port = process.env.PORT || 3000;
 
 const bodyParser = require('body-parser');
 
@@ -130,8 +130,6 @@ app.post('/validate-rule', (req, res) => {
         return res.status(400).json(output)
     }
 
-
-
     if (!hasOwnProperty(body.rule, "field")) {
         let out = {
             message: "rule.field is required.",
@@ -141,7 +139,6 @@ app.post('/validate-rule', (req, res) => {
 
         return res.status(400).json(out);
     }
-
 
     if (!hasOwnProperty(body.rule, "condition")) {
         let out = {
@@ -270,6 +267,7 @@ app.post('/validate-rule', (req, res) => {
 
     }
     else {
+        //check nesting
         let nest = body.rule.field.split('.');
         let field_value;
         if (nest.length == 1) {
@@ -352,6 +350,15 @@ app.post('/validate-rule', (req, res) => {
 
 
 })
+
+
+app.get('*', function (req, res) {
+    res.sendStatus(404);
+});
+
+app.post('*', function (req, res) {
+    res.sendStatus(404);
+});
 
 app.listen(port, () => {
     console.log(`App listening at http://localhost:${port}`)
