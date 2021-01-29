@@ -8,7 +8,6 @@ app.use((req, res, next) => {
     bodyParser.json()(req, res, err => {
 
         if (err && req.method !== 'GET') {
-            // console.error(err);
             return res.status(400).json({
                 message: "Invalid JSON payload passed.",
                 status: "error",
@@ -82,6 +81,9 @@ function return_result(res, result, field_name, field_value, rule_condition, con
     }
 }
 
+
+
+
 app.get('/', (req, res) => {
 
     let output = {
@@ -89,7 +91,7 @@ app.get('/', (req, res) => {
         status: "success",
         data: my_data
     }
-    res.status(200).json(output)
+    res.status(200).json(output);
 })
 
 
@@ -212,7 +214,7 @@ app.post('/validate-rule', (req, res) => {
         }
 
         if (body.rule.condition == 'eq') {
-            let field_value = body.data[body.rule.field];
+            let field_value = body.data[body.rule.field]; //
             let result = (field_value == body.rule.condition_value)
             return return_result(res, result, body.rule.field, field_value, body.rule.condition, body.rule.condition_value);
         }
@@ -224,13 +226,46 @@ app.post('/validate-rule', (req, res) => {
         }
         else if (body.rule.condition == 'gte') {
 
+
             let field_value = body.data[body.rule.field];
+            //check for numeric operands
+            let opA = parseFloat(field_value);
+            let opB = parseFloat(body.rule.condition_value)
+
+            if (isNaN(opA) || isNaN(opB)) {
+
+                let out = {
+                    message: `condition ${body.rule.condition} requires numerical operands.`,
+                    status: "error",
+                    data: null
+                }
+
+                return res.status(400).json(out);
+            }
+
             let result = (field_value >= body.rule.condition_value)
             return return_result(res, result, body.rule.field, field_value, body.rule.condition, body.rule.condition_value);
 
         }
         else if (body.rule.condition == 'gt') {
             let field_value = body.data[body.rule.field];
+
+
+            //check for numeric operands
+            let opA = parseFloat(field_value);
+            let opB = parseFloat(body.rule.condition_value)
+
+            if (isNaN(opA) || isNaN(opB)) {
+
+                let out = {
+                    message: `condition ${body.rule.condition} requires numerical operands.`,
+                    status: "error",
+                    data: null
+                }
+
+                return res.status(400).json(out);
+            }
+
             let result = (field_value > body.rule.condition_value)
             return return_result(res, result, body.rule.field, field_value, body.rule.condition, body.rule.condition_value);
 
@@ -251,6 +286,8 @@ app.post('/validate-rule', (req, res) => {
         else {
             field_value = body.data[nest[0]][nest[1]]
         }
+
+
         if (field_value == undefined) {
 
             let out = {
@@ -273,24 +310,49 @@ app.post('/validate-rule', (req, res) => {
 
         }
         else if (body.rule.condition == 'gte') {
+            let opA = parseFloat(field_value);
+            let opB = parseFloat(body.rule.condition_value)
+
+            if (isNaN(opA) || isNaN(opB)) {
+
+                let out = {
+                    message: `condition ${body.rule.condition} requires numerical operands.`,
+                    status: "error",
+                    data: null
+                }
+
+                return res.status(400).json(out);
+            }
+
 
             let result = (field_value >= body.rule.condition_value)
             return return_result(res, result, body.rule.field, field_value, body.rule.condition, body.rule.condition_value);
 
         }
         else if (body.rule.condition == 'gt') {
+
+            let opA = parseFloat(field_value);
+            let opB = parseFloat(body.rule.condition_value)
+
+            if (isNaN(opA) || isNaN(opB)) {
+
+                let out = {
+                    message: `condition ${body.rule.condition} requires numerical operands.`,
+                    status: "error",
+                    data: null
+                }
+
+                return res.status(400).json(out);
+            }
+
             let result = (field_value > body.rule.condition_value)
             return return_result(res, result, body.rule.field, field_value, body.rule.condition, body.rule.condition_value);
 
         }
         else if (body.rule.condition == 'contains') {
-
             let result = (field_value.includes(body.rule.condition_value))
             return return_result(res, result, body.rule.field, field_value, body.rule.condition, body.rule.condition_value);
         }
-
-
-
     }
 
 
