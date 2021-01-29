@@ -34,50 +34,40 @@ function hasOwnProperty(obj, prop) {
         (!(prop in proto) || proto[prop] !== obj[prop]);
 }
 
-function return_success(res, field_name, field_value, rule_condition, condition_value) {
-
-    let output = {
-        message: `field ${field_name} successfully validated.`,
-        status: "success",
-        data: {
-            validation: {
-                error: false,
-                field: `${field_name}`,
-                field_value: `${field_value}`,
-                condition: `${rule_condition}`,
-                condition_value: `${condition_value}`
-            }
-        }
-    }
-
-    res.status(200).json(output)
-}
-
-function return_error(res, field_name, field_value, rule_condition, condition_value) {
-
-    let output = {
-        message: `field ${field_name} failed validation.`,
-        status: "error",
-        data: {
-            validation: {
-                error: true,
-                field: `${field_name}`,
-                field_value: `${field_value}`,
-                condition: `${rule_condition}`,
-                condition_value: `${condition_value}`
-            }
-        }
-    }
-
-    res.status(400).json(output)
-}
-
 function return_result(res, result, field_name, field_value, rule_condition, condition_value) {
     if (result) {
-        return return_success(res, field_name, field_value, rule_condition, condition_value);
+        let output = {
+            message: `field ${field_name} successfully validated.`,
+            status: "success",
+            data: {
+                validation: {
+                    error: false,
+                    field: `${field_name}`,
+                    field_value: `${field_value}`,
+                    condition: `${rule_condition}`,
+                    condition_value: `${condition_value}`
+                }
+            }
+        }
+
+        return res.status(200).json(output)
     }
     else {
-        return return_error(res, field_name, field_value, rule_condition, condition_value)
+        let output = {
+            message: `field ${field_name} failed validation.`,
+            status: "error",
+            data: {
+                validation: {
+                    error: true,
+                    field: `${field_name}`,
+                    field_value: `${field_value}`,
+                    condition: `${rule_condition}`,
+                    condition_value: `${condition_value}`
+                }
+            }
+        }
+
+        return res.status(400).json(output)
     }
 }
 
@@ -97,6 +87,7 @@ app.get('/', (req, res) => {
 
 
 app.post('/validate-rule', (req, res) => {
+
     let body = req.body;
     //check the rule and data field
     if (!hasOwnProperty(body, "rule")) {
@@ -229,6 +220,7 @@ app.post('/validate-rule', (req, res) => {
 
             let field_value = body.data[body.rule.field];
             //check for numeric operands
+
             let opA = parseFloat(field_value);
             let opB = parseFloat(body.rule.condition_value)
 
@@ -310,6 +302,8 @@ app.post('/validate-rule', (req, res) => {
 
         }
         else if (body.rule.condition == 'gte') {
+
+            //check for numeric operands
             let opA = parseFloat(field_value);
             let opB = parseFloat(body.rule.condition_value)
 
@@ -331,6 +325,7 @@ app.post('/validate-rule', (req, res) => {
         }
         else if (body.rule.condition == 'gt') {
 
+            //check for numeric operands
             let opA = parseFloat(field_value);
             let opB = parseFloat(body.rule.condition_value)
 
